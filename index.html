@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pradhan Resignation Doubt Button</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #ff4d4d;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    p.subtitle {
+      color: #aaaaaa;
+      font-size: 1rem;
+    }
+
+    /* Container for the runaway button */
+    .button-arena {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 350px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    /* Dramatic Red Button */
+    .doubt-btn {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+      border: 8px solid #800000;
+      box-shadow: 0 12px 0 #500000, 0 15px 25px rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+      transition: top 0.2s ease, left 0.2s ease, transform 0.1s ease;
+      outline: none;
+    }
+
+    .doubt-btn:active {
+      box-shadow: 0 4px 0 #500000, 0 5px 10px rgba(0, 0, 0, 0.6);
+      transform: translateY(8px);
+    }
+
+    /* Counter Display */
+    .stats-card {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 1.5rem 2.5rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+
+    .counter-title {
+      font-size: 0.9rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .counter-value {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #ff4d4d;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    footer {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>The Doubt Button</h1>
+    <p class="subtitle">Press to demand accountability (if you can catch it).</p>
+  </header>
+
+  <div class="button-arena" id="arena">
+    <button class="doubt-btn" id="doubtBtn">RESIGN?</button>
+  </div>
+
+  <div class="stats-card">
+    <div class="counter-title">Worldwide Frustration Count</div>
+    <div class="counter-value" id="clickCounter">1,420,690</div>
+  </div>
+
+  <footer>
+    Inspired by eternal delays & student perseverance.
+  </footer>
+
+  <script>
+    const btn = document.getElementById('doubtBtn');
+    const arena = document.getElementById('arena');
+    const counterDisplay = document.getElementById('clickCounter');
+
+    // Initial simulated count
+    let count = 1420690;
+
+    // --- 1. RUNAWAY MECHANISM ---
+    btn.addEventListener('mouseover', moveButton);
+
+    function moveButton() {
+      const arenaRect = arena.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+
+      // Calculate max positions within the arena boundaries
+      const maxX = arenaRect.width - btnRect.width;
+      const maxY = arenaRect.height - btnRect.height;
+
+      // Generate new random positions
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+
+      btn.style.left = `${randomX}px`;
+      btn.style.top = `${randomY}px`;
+    }
+
+    // --- 2. AUDIO GENERATOR (Sad Trombone Effect via Web Audio API) ---
+    function playSadTrombone() {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const notes = [
+        { freq: 311.13, duration: 0.3 }, // Eb4
+        { freq: 293.66, duration: 0.3 }, // D4
+        { freq: 277.18, duration: 0.3 }, // Db4
+        { freq: 261.63, duration: 0.8 }  // C4 (sustained pitch bend)
+      ];
+
+      let startTime = audioCtx.currentTime;
+
+      notes.forEach((note, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(note.freq, startTime);
+
+        // Add a slight slide down to the final note for drama
+        if (index === notes.length - 1) {
+          osc.frequency.linearRampToValueAtTime(note.freq - 30, startTime + note.duration);
+        }
+
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + note.duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + note.duration);
+
+        startTime += note.duration;
+      });
+    }
+
+    // --- 3. CLICK EVENT & COUNTER ---
+    btn.addEventListener('click', () => {
+      // Play audio
+      playSadTrombone();
+
+      // Increment counter
+      count++;
+      counterDisplay.textContent = count.toLocaleString();
+
+      // Visual feedback
+      btn.textContent = "EVADED!";
+      setTimeout(() => {
+        btn.textContent = "RESIGN?";
+      }, 1000);
+
+      // Move away immediately after clicking
+      moveButton();
+    });
+  </script>
+</body>
+</html>
