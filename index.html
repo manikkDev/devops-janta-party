@@ -15,26 +15,29 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: radial-gradient(circle at center, #1b1b2f, #0f0f1a);
       color: #ffffff;
-      min-height: 100vh;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       padding: 2rem 1rem;
+      gap: 1rem;
       overflow-x: hidden;
     }
 
     header {
       text-align: center;
-      max-width: 600px;
+      max-width: 100%;
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 3.6vw, 3.2rem);
       color: #ff4d4d;
       margin-bottom: 0.5rem;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
+      line-height: 1.05;
+      white-space: nowrap;
       text-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
     }
 
@@ -47,12 +50,13 @@
     .button-arena {
       position: relative;
       width: 100%;
-      max-width: 800px;
-      height: 400px;
+      max-width: 1200px;
+      flex: 1 1 auto;
+      min-height: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 2rem 0;
+      margin: 0;
       border: 2px dashed rgba(255, 255, 255, 0.1);
       border-radius: 20px;
       background: rgba(255, 255, 255, 0.02);
@@ -62,8 +66,8 @@
     /* 3D Flip Container */
     .doubt-btn-wrapper {
       position: absolute;
-      width: 180px;
-      height: 180px;
+      width: 225px;
+      height: 225px;
       perspective: 1000px;
       transition: top 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), 
                   left 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -125,33 +129,6 @@
       letter-spacing: 1px;
     }
 
-    /* Counter Display */
-    .stats-card {
-      background: rgba(30, 30, 30, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 1.5rem 3rem;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .counter-title {
-      font-size: 0.9rem;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.5rem;
-    }
-
-    .counter-value {
-      font-size: 3rem;
-      font-weight: 800;
-      color: #ff4d4d;
-      font-family: 'Courier New', Courier, monospace;
-      text-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
-    }
-
     /* Click Particle Effect */
     .particle {
       position: absolute;
@@ -171,17 +148,22 @@
       }
     }
 
-    footer {
-      font-size: 0.85rem;
-      color: #666;
-      margin-top: 1rem;
+    @media (max-width: 800px) {
+      h1 {
+        white-space: normal;
+        font-size: clamp(1.7rem, 8vw, 2.4rem);
+      }
+
+      .button-arena {
+        flex: 1 1 auto;
+      }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>The Doubt Button</h1>
+    <h1>The Dharmendra Pradhan Resignation Button</h1>
     <p class="subtitle">Press to demand accountability (if Pradhan lets you).</p>
   </header>
 
@@ -190,37 +172,39 @@
       <div class="doubt-btn-inner">
         <!-- Front Side: Dharmendra -->
         <div class="btn-face btn-face-front">
-          <img src="dharmendra.png" alt="Dharmendra">
+          <img src="Images/dharmendra.png" alt="Dharmendra">
           <div class="btn-overlay">RESIGN?</div>
         </div>
         <!-- Back Side: Modi -->
         <div class="btn-face btn-face-back">
-          <img src="modi.png" alt="Modi">
+          <img src="Images/modi.png" alt="Modi">
           <div class="btn-overlay">EVADED!</div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="stats-card">
-    <div class="counter-title">Worldwide Frustration Count</div>
-    <div class="counter-value" id="clickCounter">1,420,690</div>
-  </div>
-
-  <footer>
-    Inspired by eternal delays & student perseverance.
-  </footer>
-
   <script>
     const btn = document.getElementById('doubtBtn');
     const arena = document.getElementById('arena');
-    const counterDisplay = document.getElementById('clickCounter');
-
-    let count = 1420690;
     let isFlipped = false;
 
     // --- 1. RUNAWAY MECHANISM ---
     btn.addEventListener('mouseover', moveButton);
+    document.addEventListener('mousemove', avoidCursor);
+
+    function avoidCursor(event) {
+      const btnRect = btn.getBoundingClientRect();
+      const cursorX = event.clientX;
+      const cursorY = event.clientY;
+      const centerX = btnRect.left + btnRect.width / 2;
+      const centerY = btnRect.top + btnRect.height / 2;
+      const distance = Math.hypot(cursorX - centerX, cursorY - centerY);
+
+      if (distance < 180) {
+        moveButton();
+      }
+    }
 
     function moveButton() {
       const arenaRect = arena.getBoundingClientRect();
@@ -229,8 +213,8 @@
       const maxX = arenaRect.width - btnRect.width;
       const maxY = arenaRect.height - btnRect.height;
 
-      const randomX = Math.floor(Math.random() * maxX);
-      const randomY = Math.floor(Math.random() * maxY);
+      const randomX = Math.floor(Math.random() * Math.max(maxX, 1));
+      const randomY = Math.floor(Math.random() * Math.max(maxY, 1));
 
       btn.style.left = `${randomX}px`;
       btn.style.top = `${randomY}px`;
@@ -313,20 +297,16 @@
       const rect = arena.getBoundingClientRect();
       createParticles(e.clientX - rect.left, e.clientY - rect.top);
 
-      // Increment Counter
-      count++;
-      counterDisplay.textContent = count.toLocaleString();
-
       // Trigger Image Flip Effect
       if (!isFlipped) {
         btn.classList.add('flipped');
         isFlipped = true;
 
-        // Revert back to Dharmendra image after 2 seconds
+        // Revert back to Dharmendra image after a longer win animation
         setTimeout(() => {
           btn.classList.remove('flipped');
           isFlipped = false;
-        }, 2000);
+        }, 4000);
       }
 
       // Evade/Move away after click
